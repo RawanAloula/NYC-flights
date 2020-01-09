@@ -1,0 +1,169 @@
+---
+title: " "
+author: "RawanAloula"
+date: " "
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<br>
+
+#### Load data 
+
+```{r}
+library(nycflights13)
+head(flights, 10)
+dim(flights)
+tail(flights, 10)
+```
+
+```{r}
+
+colnames(flights)
+
+```
+
+
+
+
+<br>
+
+#### 1. 
+
+The function calculate basic statistics hence "Stat" and returns Min, Max, Median hence "3M"
+
+<br>
+
+```{r}
+
+Stat.3M <- function(x){
+  x <- x[!is.na(x)]
+  a = min(x)
+  b = max(x)
+  c = median(x)
+  sprintf( "min = %.2f   , max = %.2f   and median is %.2f", a, b, c)
+}
+
+```
+
+```{r}
+Stat.3M(flights$month)
+```
+
+<br>
+
+
+#### 2. Write a function that categorizes time 
+
+"Morning" for values from 5 am to 11:59 am 
+
+"Afternoon" for values from 12 pm to 4:59 pm
+
+"Evening" for values from 5 pm to 8:59 pm
+
+"Night"  for values from 9 pm to 4:59 am
+
+
+<br>
+
+It is advised to use the name of the function as a verb hence "Categorize", and "t" to emphasize time categorization.
+
+<br>
+
+```{r}
+
+Categorize.t <-  function(data, v){
+  x <- data[[v]]
+  x <- x[!is.na(x)]
+  
+  x[ (x >= 500 & x <= 1159 )] <- "Morning"
+  x[ (x >= 1200 & x <= 1659 )] <- "Afternoon"
+  x[ (x >= 1700 & x <= 2059 )] <- "Evening"
+  x[ (x >= 2100 & x <= 4590 )] <- "Night"
+  
+  
+  out <- cbind(data[[v]][!is.na(data[[v]])],x)
+  return(out)
+}
+```
+
+
+```{r}
+head(Categorize.t(flights, "dep_time"),10)
+tail(Categorize.t(flights, "dep_time"),10)
+```
+
+<br>
+
+#### 3.  Find median of all columns in the flights dataset using a for loop.  
+
+
+<br>
+
+
+The main purpose of the function is to calculate the median for all numeric variables in the data hence, "Median" and we put n emphases that it is a calculation for the entire data frame with "Data".            
+<br>
+
+##### 3.1) using a for loop
+
+```{r}
+
+Median.Data <- function(data){
+
+  med <- c()
+  var.name <- c()
+  
+  for(i in names(data)) {
+    
+    x <- data[[i]]
+    x <- x[!is.na(x)]
+    
+    if(is.numeric(x)) {
+      
+      med <- c(med, median(x))
+      var.name <- c(var.name, i)
+    }
+  
+  }
+
+  return(cbind(var.name,med))
+}
+
+
+```
+
+
+
+```{r}
+Median.Data(flights)
+```
+
+<br>
+
+##### 3.2) using "summarise_if"
+
+```{r , message= FALSE}
+library(tidyverse)
+```
+
+
+
+```{r, message= FALSE}
+
+flights %>%
+    summarise_if(is.numeric, median, na.rm = TRUE)
+
+```
+
+
+
+
+
+
+
+
+
